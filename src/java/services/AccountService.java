@@ -34,4 +34,30 @@ public class AccountService {
         
         return null;
     }
+    
+    public boolean forgotPassword(String email, String path){
+        boolean sent = false;
+        UserDB userDB = new UserDB();
+         
+        String template = path + "/emailtemplates/forgotPassword.html";
+        User user = userDB.get(email);
+         try {
+                HashMap<String, String> tags = new HashMap<>();
+                tags.put("firstname", user.getFirstName());
+                tags.put("lastname", user.getLastName());
+                tags.put("email", email);
+                tags.put("password", user.getPassword());
+                tags.put("date", (new java.util.Date()).toString());
+                
+       
+            GmailService.sendMail(email, "CONFIDENTIAL: Login Details", template, tags);
+        } catch (Exception ex) {
+            Logger.getLogger(AccountService.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        if( user != null)
+            sent = true;
+        
+        return sent;
+    }
 }
